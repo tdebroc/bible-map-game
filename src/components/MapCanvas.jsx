@@ -125,7 +125,14 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
         lineCap: 'round',
         className: 'reveal-line',
       }).addTo(map)
-      map.flyToBounds(L.latLngBounds([guess, truth]).pad(0.55), { duration: 1.1, maxZoom: 10 })
+      // On réserve la place occupée par le panneau de résultat en bas de l'écran
+      const bottomInset = Math.min(300, map.getSize().y * 0.42)
+      map.flyToBounds(L.latLngBounds([guess, truth]), {
+        duration: 1.1,
+        maxZoom: 10,
+        paddingTopLeft: [40, 90],
+        paddingBottomRight: [40, bottomInset],
+      })
     } else {
       map.flyTo(truth, 8, { duration: 1.1 })
     }
