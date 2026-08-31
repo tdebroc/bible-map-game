@@ -1,4 +1,4 @@
-const KEY = 'bible-map-game.scores.v1'
+const KEY = 'bible-map-game.scores.v2'
 const NAME_KEY = 'bible-map-game.player'
 
 export function loadScores() {

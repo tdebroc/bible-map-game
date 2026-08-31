@@ -58,7 +58,7 @@ export default function Home({ onStart, onLeaderboard, best, playerName, onNameC
           <h3>Comment jouer</h3>
           <ul>
             <li>Un événement de la vie de Jésus s'affiche.</li>
-            <li>Cliquez sur la carte à l'endroit où il s'est produit, puis validez.</li>
+            <li>Cliquez sur la carte à l'endroit où il s'est produit : la réponse est validée immédiatement.</li>
             <li>Plus vous êtes <strong>proche</strong> et <strong>rapide</strong>, plus vous marquez de points.</li>
             <li>Enchaînez les bonnes réponses (&lt; 100 km) pour déclencher le <strong>combo 🔥</strong>.</li>
           </ul>

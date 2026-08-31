@@ -18,7 +18,7 @@ function pickRounds() {
   allEvents.forEach((e) => byDiff[e.difficulty]?.push(e))
   const shuffle = (a) => [...a].sort(() => Math.random() - 0.5)
   // Progression : on commence facile, on finit difficile
-  const plan = ['facile', 'facile', 'facile', 'moyen', 'moyen', 'moyen', 'moyen', 'difficile', 'difficile', 'difficile']
+  const plan = ['facile', 'facile', 'moyen', 'moyen', 'difficile']
   const pools = {
     facile: shuffle(byDiff.facile),
     moyen: shuffle(byDiff.moyen),
@@ -93,11 +93,11 @@ export default function Game({ onFinish, onQuit }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, phase])
 
-  function submit(timedOut = false) {
+  function submit(timedOut = false, guessOverride = null) {
     if (phaseRef.current !== 'guessing') return
     cancelAnimationFrame(rafRef.current)
     const secondsLeft = Math.max(0, (deadlineRef.current - performance.now()) / 1000)
-    const g = guessRef.current
+    const g = guessOverride ?? guessRef.current
     const truth = { lat: current.lat, lng: current.lng }
 
     let entry
@@ -165,16 +165,13 @@ export default function Game({ onFinish, onQuit }) {
     setIndex((i) => i + 1)
   }
 
-  // Raccourcis clavier
+  // Raccourci clavier : passer à la manche suivante après la correction
   useEffect(() => {
     const onKey = (e) => {
       if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+        if (phaseRef.current !== 'revealed') return
         e.preventDefault()
-        if (phaseRef.current === 'guessing') {
-          if (guessRef.current) submit()
-        } else {
-          next()
-        }
+        next()
       }
     }
     window.addEventListener('keydown', onKey)
@@ -195,6 +192,7 @@ export default function Game({ onFinish, onQuit }) {
         onGuess={(g) => {
           setGuess(g)
           sfx.place()
+          submit(false, g)
         }}
         resetSignal={index}
       />
@@ -235,7 +233,7 @@ export default function Game({ onFinish, onQuit }) {
         </div>
         <h2 className="question-title">{current.title}</h2>
         <p className="question-desc">{current.description}</p>
-        <p className="question-hint">Où cet événement s'est-il déroulé&nbsp;? Cliquez sur la carte.</p>
+        <p className="question-hint">Où cet événement s'est-il déroulé&nbsp;?</p>
       </div>
 
       <div className={`timer-wrap ${urgent ? 'urgent' : ''} ${phase === 'revealed' ? 'done' : ''}`}>
@@ -246,10 +244,9 @@ export default function Game({ onFinish, onQuit }) {
       </div>
 
       {phase === 'guessing' && (
-        <div className="action-bar">
-          <button className={`btn primary big ${guess ? 'pop' : 'disabled'}`} disabled={!guess} onClick={() => submit()}>
-            {guess ? '✓ Valider ma réponse' : 'Cliquez sur la carte…'}
-          </button>
+        <div className="click-hint">
+          <span className="click-hint-dot" />
+          Cliquez sur la carte pour répondre
         </div>
       )}
 

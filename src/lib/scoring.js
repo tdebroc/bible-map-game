@@ -1,6 +1,6 @@
 export const MAX_POINTS = 5000
 export const ROUND_TIME = 10 // secondes
-export const ROUNDS = 10
+export const ROUNDS = 5
 
 export function haversine(a, b) {
   const R = 6371

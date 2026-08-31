@@ -1,9 +1,10 @@
 # ✝️ BiblioMap — Sur les pas de Jésus
 
 Jeu web (type GeoGuessr) : un événement de la vie de Jésus s'affiche, il faut cliquer
-sur la carte à l'endroit où il s'est produit. Plus la réponse est **proche** et
+sur la carte à l'endroit où il s'est produit. **Le clic valide directement la réponse**,
+il n'y a pas de bouton de validation. Plus la réponse est **proche** et
 **rapide**, plus elle rapporte de points (jusqu'à **5 000 pts** par question,
-**10 questions** par partie, **10 secondes** par question).
+**5 questions** par partie, **10 secondes** par question).
 
 ## Démarrer
 
@@ -27,7 +28,7 @@ npm run preview  # prévisualiser le build
 - **Effets** : confettis canvas, ondes au clic sur la carte, pins animés, ligne
   pointillée animée entre la réponse et le vrai lieu, compteurs de score animés,
   shake d'écran en cas d'échec, sons générés en Web Audio (coupables via 🔊).
-- **Sauvegarde** : scores en `localStorage` (`bible-map-game.scores.v1`), page
+- **Sauvegarde** : scores en `localStorage` (`bible-map-game.scores.v2`), page
   classement triée avec podium, moyenne et remise à zéro.
 
 ## Données — `src/data/events.json`
@@ -45,12 +46,12 @@ npm run preview  # prévisualiser le build
 | `verse` | verset associé |
 | `bibleLink` | lien vers le passage (BibleGateway, Louis Segond) |
 
-Chaque partie tire 10 événements selon une progression
-`facile → moyen → difficile`.
+Chaque partie tire 5 événements selon une progression
+`facile → facile → moyen → moyen → difficile`.
 
 ## Raccourcis
 
-- `Espace` / `Entrée` : valider la réponse, puis passer à la question suivante.
+- `Espace` / `Entrée` : passer à la question suivante (après la correction).
 
 ## Structure
 
