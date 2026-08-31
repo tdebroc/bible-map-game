@@ -17,10 +17,15 @@ npm run preview  # prévisualiser le build
 
 ## Fonctionnement
 
-- **Carte** : Leaflet + imagerie satellite Esri (aucune clé d'API requise), centrée
-  par défaut sur le Moyen-Orient / la Terre sainte (zoom 7). Le fond ne comporte
-  **aucun nom de lieu** pendant la question ; les noms apparaissent en fondu au
-  moment de la correction.
+- **Carte** : Leaflet + imagerie satellite Esri (aucune clé d'API requise). Le
+  cadrage par défaut est calculé par `fitBounds` sur la Terre sainte
+  (`31.3/34.6` → `33.5/36.1`), ce qui donne un zoom 8–9 selon l'écran : la mer de
+  Galilée, la vallée du Jourdain et la mer Morte sont toujours visibles. Le
+  cadrage réserve la place de l'interface (bandeau, barre de temps, pastille) et
+  se recalcule au redimensionnement. 61 des 62 événements y sont contenus ;
+  seule la fuite en Égypte demande de dézoomer (d'où sa difficulté `difficile`).
+  Le fond ne comporte **aucun nom de lieu** pendant la question ; les noms
+  apparaissent en fondu au moment de la correction.
 - **Score** : `5000 × e^(−distance_km/150) × (0,5 + 0,5 × temps_restant/10) × (1 + 0,05 × combo)`,
   plafonné à 5 000 points. Le combo s'incrémente à chaque réponse à moins de 100 km.
 - **Timer** : barre dégradée qui décroît en temps réel, passe en rouge et pulse

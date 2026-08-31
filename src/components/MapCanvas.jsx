@@ -1,8 +1,22 @@
 import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 
-const DEFAULT_CENTER = [31.9, 35.4] // Terre sainte / Moyen-Orient
-const DEFAULT_ZOOM = 7
+// Cadre par défaut : la Terre sainte (Israël, Palestine, Jourdain, Galilée).
+// 61 des 62 événements y sont contenus ; seule la fuite en Égypte demande
+// de dézoomer.
+const HOLY_LAND = L.latLngBounds([31.3, 34.6], [33.5, 36.1])
+
+// Le cadrage réserve la place occupée par l'interface (bandeau du haut,
+// barre de temps et pastille du bas) pour que la Terre sainte reste
+// entièrement visible et non masquée.
+function fitOptions(map) {
+  const small = map.getSize().x <= 720
+  return {
+    maxZoom: 10,
+    paddingTopLeft: [26, 80],
+    paddingBottomRight: [26, small ? 210 : 130],
+  }
+}
 
 // Fonds Esri : pas de clé d'API requise. L'imagerie satellite ne comporte
 // aucun nom de lieu, ce qui évite de donner la réponse avant la validation.
@@ -46,10 +60,11 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
 
   useEffect(() => {
     const map = L.map(containerRef.current, {
-      center: DEFAULT_CENTER,
-      zoom: DEFAULT_ZOOM,
+      center: HOLY_LAND.getCenter(),
+      zoom: 8,
       minZoom: 3,
       maxZoom: 13,
+      zoomSnap: 0.25,
       zoomControl: false,
       doubleClickZoom: false,
       attributionControl: true,
@@ -60,6 +75,7 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
       ],
       maxBoundsViscosity: 0.8,
     })
+    map.fitBounds(HOLY_LAND, fitOptions(map))
     // Deux calques séparés : le fond est assombri par CSS, pas les noms de lieux
     map.createPane('basemap').style.zIndex = 200
     map.createPane('labels').style.zIndex = 300
@@ -82,8 +98,23 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
     })
 
     mapRef.current = map
-    setTimeout(() => map.invalidateSize(), 60)
+    const initTimer = setTimeout(() => {
+      map.invalidateSize()
+      map.fitBounds(HOLY_LAND, { ...fitOptions(map), animate: false })
+    }, 60)
+
+    // Le cadrage s'adapte au redimensionnement de la fenêtre tant que le
+    // joueur n'a pas encore répondu.
+    const onResize = () => {
+      if (!lockedRef.current && !guessMarkerRef.current) {
+        map.fitBounds(HOLY_LAND, { ...fitOptions(map), animate: false })
+      }
+    }
+    map.on('resize', onResize)
+
     return () => {
+      clearTimeout(initTimer)
+      map.off('resize', onResize)
       map.remove()
       mapRef.current = null
     }
@@ -181,7 +212,7 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
       }
     })
     if (labelsRef.current && map.hasLayer(labelsRef.current)) map.removeLayer(labelsRef.current)
-    map.flyTo(DEFAULT_CENTER, DEFAULT_ZOOM, { duration: 0.9 })
+    map.flyToBounds(HOLY_LAND, { ...fitOptions(map), duration: 0.9 })
   }, [resetSignal])
 
   return <div ref={containerRef} className={`map-canvas ${locked ? 'is-locked' : ''}`} />
