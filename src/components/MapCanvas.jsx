@@ -66,7 +66,13 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
     map.getPane('labels').style.pointerEvents = 'none'
 
     L.tileLayer(NO_LABELS, { attribution: ATTR, maxNativeZoom: 16, pane: 'basemap' }).addTo(map)
-    labelsRef.current = L.tileLayer(LABELS, { opacity: 0, maxNativeZoom: 16, pane: 'labels' })
+    labelsRef.current = L.tileLayer(LABELS, {
+      opacity: 0,
+      maxNativeZoom: 16,
+      pane: 'labels',
+      updateWhenZooming: false,
+      keepBuffer: 1,
+    })
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
     map.on('click', (e) => {
@@ -137,16 +143,31 @@ export default function MapCanvas({ guess, truth, locked, onGuess, resetSignal }
       map.flyTo(truth, 8, { duration: 1.1 })
     }
 
-    // Fait apparaître les noms de lieux au moment de la correction
+    // Les noms de lieux n'apparaissent qu'une fois le zoom terminé, pour éviter
+    // que Leaflet n'étire des tuiles de labels basse résolution pendant le vol.
     const labels = labelsRef.current
-    labels.addTo(map)
-    let o = 0
-    const fade = setInterval(() => {
-      o = Math.min(1, o + 0.08)
-      labels.setOpacity(o)
-      if (o >= 1) clearInterval(fade)
-    }, 30)
-    return () => clearInterval(fade)
+    let fade = null
+    const showLabels = () => {
+      if (!mapRef.current) return
+      labels.addTo(map)
+      let o = 0
+      fade = setInterval(() => {
+        o = Math.min(1, o + 0.08)
+        labels.setOpacity(o)
+        if (o >= 1) clearInterval(fade)
+      }, 30)
+    }
+    map.once('moveend', showLabels)
+    const safety = setTimeout(() => {
+      map.off('moveend', showLabels)
+      if (!map.hasLayer(labels)) showLabels()
+    }, 1600)
+
+    return () => {
+      clearTimeout(safety)
+      clearInterval(fade)
+      map.off('moveend', showLabels)
+    }
   }, [truth])
 
   // Réinitialisation entre deux manches
