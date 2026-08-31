@@ -4,7 +4,7 @@ Jeu web (type GeoGuessr) : un événement de la vie de Jésus s'affiche, il faut
 sur la carte à l'endroit où il s'est produit. **Le clic valide directement la réponse**,
 il n'y a pas de bouton de validation. Plus la réponse est **proche** et
 **rapide**, plus elle rapporte de points (jusqu'à **5 000 pts** par question,
-**5 questions** par partie, **10 secondes** par question).
+**7 questions** par partie, **10 secondes** par question).
 
 ## Démarrer
 
@@ -24,8 +24,8 @@ npm run preview  # prévisualiser le build
   cadrage réserve la place de l'interface (bandeau, barre de temps, pastille) et
   se recalcule au redimensionnement. 61 des 62 événements y sont contenus ;
   seule la fuite en Égypte demande de dézoomer (d'où sa difficulté `difficile`).
-  Le fond ne comporte **aucun nom de lieu** pendant la question ; les noms
-  apparaissent en fondu au moment de la correction.
+  Le fond satellite ne comporte aucun nom gravé ; une couche de **noms de
+  villes** est superposée en permanence pour aider au repérage.
 - **Score** : `5000 × e^(−distance_km/150) × (0,5 + 0,5 × temps_restant/10) × (1 + 0,05 × combo)`,
   plafonné à 5 000 points. Le combo s'incrémente à chaque réponse à moins de 100 km.
 - **Timer** : barre dégradée qui décroît en temps réel, passe en rouge et pulse
@@ -33,7 +33,7 @@ npm run preview  # prévisualiser le build
 - **Effets** : confettis canvas, ondes au clic sur la carte, pins animés, ligne
   pointillée animée entre la réponse et le vrai lieu, compteurs de score animés,
   shake d'écran en cas d'échec, sons générés en Web Audio (coupables via 🔊).
-- **Sauvegarde** : scores en `localStorage` (`bible-map-game.scores.v2`), page
+- **Sauvegarde** : scores en `localStorage` (`bible-map-game.scores.v3`), page
   classement triée avec podium, moyenne et remise à zéro.
 
 ## Données — `src/data/events.json`
@@ -51,8 +51,21 @@ npm run preview  # prévisualiser le build
 | `verse` | verset associé |
 | `bibleLink` | lien vers le passage (BibleGateway, Louis Segond) |
 
-Chaque partie tire 5 événements selon une progression
-`facile → facile → moyen → moyen → difficile`.
+Chaque partie tire 7 événements **uniquement dans la difficulté choisie**
+(facile : 14 événements, moyen : 25, difficile : 23).
+
+## Niveaux de difficulté
+
+Trois niveaux sélectionnables sur l'accueil, **Facile par défaut** :
+
+| niveau | vivier | description |
+|---|---|---|
+| 🌱 Facile | événements `facile` | lieux emblématiques (Bethléem, Nazareth…) |
+| ⚔️ Moyen | événements `moyen` | villages et rives moins connus |
+| 🔥 Difficile | événements `difficile` | lieux rares, parfois hors de la Terre sainte |
+
+Le niveau est enregistré avec le score : le **record est calculé par niveau** et
+le classement propose des filtres par niveau.
 
 ## Raccourcis
 

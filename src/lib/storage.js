@@ -1,4 +1,4 @@
-const KEY = 'bible-map-game.scores.v2'
+const KEY = 'bible-map-game.scores.v3'
 const NAME_KEY = 'bible-map-game.player'
 
 export function loadScores() {
@@ -36,8 +36,8 @@ export function clearScores() {
   }
 }
 
-export function bestScore() {
-  const list = loadScores()
+export function bestScore(level) {
+  const list = loadScores().filter((s) => !level || s.level === level)
   return list.length ? Math.max(...list.map((s) => s.score)) : 0
 }
 

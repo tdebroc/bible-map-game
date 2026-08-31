@@ -13,29 +13,23 @@ import {
 } from '../lib/scoring.js'
 import allEvents from '../data/events.json'
 
-function pickRounds() {
-  const byDiff = { facile: [], moyen: [], difficile: [] }
-  allEvents.forEach((e) => byDiff[e.difficulty]?.push(e))
-  const shuffle = (a) => [...a].sort(() => Math.random() - 0.5)
-  // Progression : on commence facile, on finit difficile
-  const plan = ['facile', 'facile', 'moyen', 'moyen', 'difficile']
-  const pools = {
-    facile: shuffle(byDiff.facile),
-    moyen: shuffle(byDiff.moyen),
-    difficile: shuffle(byDiff.difficile),
+function shuffle(a) {
+  const arr = [...a]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  const fallback = shuffle(allEvents)
-  const chosen = []
-  const used = new Set()
-  plan.forEach((d) => {
-    let e = pools[d].find((x) => !used.has(x.id))
-    if (!e) e = fallback.find((x) => !used.has(x.id))
-    if (e) {
-      used.add(e.id)
-      chosen.push(e)
-    }
-  })
-  return chosen.slice(0, ROUNDS)
+  return arr
+}
+
+// Les questions sont tirées dans la difficulté choisie. Si le vivier ne suffit
+// pas, on complète avec les autres événements pour toujours avoir ROUNDS manches.
+function pickRounds(level) {
+  const pool = shuffle(allEvents.filter((e) => e.difficulty === level))
+  if (pool.length >= ROUNDS) return pool.slice(0, ROUNDS)
+  const used = new Set(pool.map((e) => e.id))
+  const filler = shuffle(allEvents.filter((e) => !used.has(e.id)))
+  return [...pool, ...filler].slice(0, ROUNDS)
 }
 
 const DIFF_META = {
@@ -44,8 +38,8 @@ const DIFF_META = {
   difficile: { label: 'Difficile', className: 'diff-hard' },
 }
 
-export default function Game({ onFinish, onQuit }) {
-  const rounds = useMemo(pickRounds, [])
+export default function Game({ level, onFinish, onQuit }) {
+  const rounds = useMemo(() => pickRounds(level), [level])
   const [index, setIndex] = useState(0)
   const [phase, setPhase] = useState('guessing')
   const [guess, setGuess] = useState(null)
@@ -148,6 +142,7 @@ export default function Game({ onFinish, onQuit }) {
       sfx.finish()
       onFinish({
         score: total,
+        level,
         rounds: results.map((r) => ({
           title: r.event.title,
           place: r.event.place,
