@@ -93,7 +93,7 @@
     "place": "Égypte (delta du Nil, région du Caire)",
     "lat": 30.0444,
     "lng": 31.2357,
-    "difficulty": "difficile",
+    "difficulty": "facile",
     "description": "Averti en songe, Joseph prend l'enfant et sa mère de nuit et se réfugie hors du royaume d'Hérode, jusqu'à la mort de celui-ci.",
     "verse": "« J'ai appelé mon fils hors d'Égypte. » — Matthieu 2:15",
     "bibleLink": "https://www.biblegateway.com/passage/?search=Matthieu%202%3A13-15&version=LSG"
@@ -137,7 +137,7 @@
     "place": "Le Jourdain à Béthanie (Qasr el-Yahud)",
     "lat": 31.837,
     "lng": 35.539,
-    "difficulty": "moyen",
+    "difficulty": "facile",
     "description": "Jésus descend dans le fleuve pour être baptisé par Jean. Les cieux s'ouvrent, l'Esprit descend comme une colombe et la voix du Père retentit.",
     "verse": "« Celui-ci est mon Fils bien-aimé, en qui j'ai mis toute mon affection. » — Matthieu 3:17",
     "bibleLink": "https://www.biblegateway.com/passage/?search=Matthieu%203%3A13-17&version=LSG"
@@ -159,7 +159,7 @@
     "place": "Cana de Galilée (Kafr Kanna)",
     "lat": 32.748,
     "lng": 35.34,
-    "difficulty": "moyen",
+    "difficulty": "facile",
     "description": "À la demande de sa mère, Jésus change l'eau de six jarres de pierre en un vin excellent : c'est le premier de ses signes.",
     "verse": "« Faites tout ce qu'il vous dira. » — Jean 2:5",
     "bibleLink": "https://www.biblegateway.com/passage/?search=Jean%202%3A1-11&version=LSG"
@@ -181,7 +181,7 @@
     "place": "Sychar (Naplouse), Samarie",
     "lat": 32.209,
     "lng": 35.281,
-    "difficulty": "difficile",
+    "difficulty": "facile",
     "description": "Fatigué du chemin, Jésus s'assied près du puits vers la sixième heure et demande à boire à une femme de Samarie.",
     "verse": "« L'eau que je lui donnerai deviendra en lui une source d'eau qui jaillit jusque dans la vie éternelle. » — Jean 4:14",
     "bibleLink": "https://www.biblegateway.com/passage/?search=Jean%204%3A1-42&version=LSG"
@@ -489,7 +489,7 @@
     "place": "Jéricho",
     "lat": 31.87,
     "lng": 35.444,
-    "difficulty": "moyen",
+    "difficulty": "facile",
     "description": "Petit de taille, un chef des collecteurs d'impôts monte sur un sycomore pour voir Jésus traverser la plus ancienne ville du monde.",
     "verse": "« Zachée, hâte-toi de descendre ; il faut que je demeure aujourd'hui dans ta maison. » — Luc 19:5",
     "bibleLink": "https://www.biblegateway.com/passage/?search=Luc%2019%3A1-10&version=LSG"

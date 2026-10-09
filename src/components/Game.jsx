@@ -12,6 +12,11 @@ import {
   verdict,
 } from '../lib/scoring.js'
 import allEvents from '../data/events.json'
+import { regionOf } from '../lib/regions.js'
+
+// Maximum d'événements tirés dans une même région géographique, pour éviter
+// qu'une partie se concentre sur Jérusalem (ou tout autre point chaud).
+const MAX_PER_REGION = 2
 
 function shuffle(a) {
   const arr = [...a]
@@ -22,14 +27,46 @@ function shuffle(a) {
   return arr
 }
 
-// Les questions sont tirées dans la difficulté choisie. Si le vivier ne suffit
-// pas, on complète avec les autres événements pour toujours avoir ROUNDS manches.
+// Prend jusqu'à `n` événements dans `pool` sans dépasser `MAX_PER_REGION` par
+// région. `counts` cumule les régions déjà retenues (tirages précédents).
+function takeWithRegionCap(pool, n, counts) {
+  const picked = []
+  for (const e of pool) {
+    if (picked.length >= n) break
+    const r = regionOf(e)
+    if ((counts.get(r) || 0) >= MAX_PER_REGION) continue
+    counts.set(r, (counts.get(r) || 0) + 1)
+    picked.push(e)
+  }
+  return picked
+}
+
+// Les questions sont tirées dans la difficulté choisie, avec au plus deux
+// événements par région. Si le vivier ne suffit pas (contrainte de région ou
+// difficulté trop pauvre), on complète avec les autres événements — d'abord en
+// respectant le plafond, puis en dernier recours sans contrainte — pour
+// toujours obtenir ROUNDS manches.
 function pickRounds(level) {
-  const pool = shuffle(allEvents.filter((e) => e.difficulty === level))
-  if (pool.length >= ROUNDS) return pool.slice(0, ROUNDS)
-  const used = new Set(pool.map((e) => e.id))
-  const filler = shuffle(allEvents.filter((e) => !used.has(e.id)))
-  return [...pool, ...filler].slice(0, ROUNDS)
+  const counts = new Map()
+  const chosen = takeWithRegionCap(
+    shuffle(allEvents.filter((e) => e.difficulty === level)),
+    ROUNDS,
+    counts,
+  )
+
+  if (chosen.length < ROUNDS) {
+    const used = new Set(chosen.map((e) => e.id))
+    const others = shuffle(allEvents.filter((e) => !used.has(e.id)))
+    chosen.push(...takeWithRegionCap(others, ROUNDS - chosen.length, counts))
+  }
+
+  if (chosen.length < ROUNDS) {
+    const used = new Set(chosen.map((e) => e.id))
+    const rest = shuffle(allEvents.filter((e) => !used.has(e.id)))
+    chosen.push(...rest.slice(0, ROUNDS - chosen.length))
+  }
+
+  return chosen.slice(0, ROUNDS)
 }
 
 const DIFF_META = {
